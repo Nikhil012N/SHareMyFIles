@@ -81,7 +81,7 @@ export function NetworkPanel({
           </div>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <Button
             onClick={onReconnectToNetwork}
             variant="outline"

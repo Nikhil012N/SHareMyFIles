@@ -89,6 +89,14 @@ export default function FileShareApp() {
             return file
           }),
         )
+      } else if (d.type === "file-cancel") {
+        // Handle incoming cancel message
+        setFiles((prev) => prev.map((f) => (f.id === d.fileId ? { ...f, status: "cancelled" } : f)))
+        toast.info("File transfer cancelled by sender")
+      } else if (d.type === "file-cancel-all") {
+        // Handle cancel all message
+        setFiles((prev) => prev.map((f) => (f.status === "transferring" || f.status === "pending" ? { ...f, status: "cancelled" } : f)))
+        toast.info("All transfers cancelled by sender")
       }
     })
   }, [setOnDataHandler, setFiles])

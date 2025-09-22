@@ -37,6 +37,8 @@ export interface NetworkStats {
 export type IncomingData =
 | { type: "file-start"; fileId: string; fileName: string; fileSize: number; totalChunks: number }
 | { type: "file-chunk"; fileId: string; chunk: ArrayBuffer; chunkIndex: number }
+| { type: "file-cancel"; fileId: string; cancelAll: boolean }
+| { type: "file-cancel-all" }
 
 export interface TransferQueueProps {
   files: FileTransfer[]

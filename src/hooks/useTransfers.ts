@@ -16,6 +16,7 @@ export function useTransfers(connectedDevices: ConnectedDevice[]) {
   const [startTime] = useState(new Date())
   const transferIntervals = useRef<Map<string, NodeJS.Timeout>>(new Map())
   const cancelledTransfers = useRef<Set<string>>(new Set())
+  const transferSenders = useRef<Map<string, string>>(new Map()) // fileId -> senderId
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -55,6 +56,9 @@ export function useTransfers(connectedDevices: ConnectedDevice[]) {
     }
 
     setFiles((prev) => prev.map((f) => (f.id === fileId ? { ...f, status: "transferring", startTime: new Date() } : f)))
+
+    // Mark this device as the sender for this file
+    transferSenders.current.set(fileId, "local")
 
     try {
       const fileBuffer = await file.file.arrayBuffer()
@@ -123,17 +127,56 @@ export function useTransfers(connectedDevices: ConnectedDevice[]) {
       clearTimeout(timeoutId)
       transferIntervals.current.delete(fileId)
     }
+
+    // Determine cancellation strategy based on connection count
+    const connectedCount = connectedDevices.filter(d => d.connected).length
+    const isSender = transferSenders.current.get(fileId) === "local"
+
+    if (connectedCount === 1 || isSender) {
+      // Single connection or main sender: cancel for all devices
+      connectedDevices.forEach(device => {
+        if (device.connection) {
+          device.connection.send({
+            type: "file-cancel",
+            fileId: fileId,
+            cancelAll: true
+          })
+        }
+      })
+    } else {
+      // Multiple connections and not sender: cancel only for this device
+      connectedDevices.forEach(device => {
+        if (device.connection) {
+          device.connection.send({
+            type: "file-cancel", 
+            fileId: fileId,
+            cancelAll: false
+          })
+        }
+      })
+    }
+
     setFiles((prev) => prev.map((f) => (f.id === fileId ? { ...f, status: "cancelled" } : f)))
     toast.info("File transfer cancelled")
-  }, [])
+  }, [connectedDevices])
 
   const cancelAllTransfers = useCallback(() => {
     transferIntervals.current.forEach((t) => clearTimeout(t))
     transferIntervals.current.clear()
     cancelledTransfers.current = new Set(files.filter(f => f.status === "transferring" || f.status === "pending").map(f => f.id))
+
+    // Cancel all transfers for all devices
+    connectedDevices.forEach(device => {
+      if (device.connection) {
+        device.connection.send({
+          type: "file-cancel-all"
+        })
+      }
+    })
+
     setFiles((prev) => prev.map((f) => (f.status === "transferring" || f.status === "pending" ? { ...f, status: "cancelled" } : f)))
     toast.info("All transfers cancelled")
-  }, [])
+  }, [connectedDevices, files])
 
   const clearCompletedFiles = useCallback(() => {
     setFiles((prev) => prev.filter((f) => f.status !== "completed"))
