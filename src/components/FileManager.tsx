@@ -3,7 +3,7 @@ import { useRef } from "react"
 import { Card } from "../ui/card"
 import { Button } from "../ui/button"
 import { Badge } from "../ui/badge"
-import { FiUpload, FiFile, FiFolder, FiShare2, FiX } from "react-icons/fi"
+import { FiUpload, FiFile,  FiShare2, FiX } from "react-icons/fi"
 import { FileManagerProps } from "../constants/types"
 
 export function FileManager({
@@ -44,7 +44,7 @@ export function FileManager({
             Select Files
           </Button>
           <Button onClick={onClearCompletedFiles} variant="outline" className="rounded-sm bg-transparent">
-            <FiFolder className="w-4 h-4 mr-2" />
+         
             Clear Completed
           </Button>
         </div>

@@ -9,6 +9,7 @@ import { DevicesPanel } from "./components/DeviceTransfer"
 import type { FileTransfer, IncomingData } from "./constants/types"
 import { TransferQueue } from "./components/TransferQueue"
 import { ThemeToggle } from "./components/ThemeToogle"
+import { toast } from "sonner"
 
 
 export default function FileShareApp() {
@@ -143,8 +144,12 @@ export default function FileShareApp() {
             setConnectId={setConnectId}
             isConnecting={isConnecting}
             isReconnecting={isReconnecting}
-            onCopyPeerId={() => navigator.clipboard.writeText(peerId)}
-            onCopyShareUrl={() => navigator.clipboard.writeText(shareUrl)}
+            onCopyPeerId={() => {navigator.clipboard.writeText(peerId);
+              toast.success("Peer ID copied to clipboard")
+            }}
+            onCopyShareUrl={() => {navigator.clipboard.writeText(shareUrl);
+              toast.success("Share URL copied to clipboard")
+            }}
             onConnectToDevice={() => connectToDevice()}
             onReconnectToNetwork={reconnectToNetwork}
             onDisconnectAllDevices={disconnectAllDevices}
