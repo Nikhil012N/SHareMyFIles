@@ -3,6 +3,18 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "author": "Nikhil",
+  "license": "MIT",
+  "homepage": "https://sharemyfiles.vercel.app",
+  "keywords": [
+    "file sharing",
+    "peer-to-peer",
+    "file transfer",
+    "webRTC",
+    "P2P",
+    "share files",
+    "real-time sharing"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

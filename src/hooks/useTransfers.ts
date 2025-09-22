@@ -16,7 +16,7 @@ export function useTransfers(connectedDevices: ConnectedDevice[]) {
   const [startTime] = useState(new Date())
   const transferIntervals = useRef<Map<string, NodeJS.Timeout>>(new Map())
   const cancelledTransfers = useRef<Set<string>>(new Set())
-  const transferSenders = useRef<Map<string, string>>(new Map()) // fileId -> senderId
+  const transferSenders = useRef<Map<string, string>>(new Map()) 
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -57,13 +57,12 @@ export function useTransfers(connectedDevices: ConnectedDevice[]) {
 
     setFiles((prev) => prev.map((f) => (f.id === fileId ? { ...f, status: "transferring", startTime: new Date() } : f)))
 
-    // Mark this device as the sender for this file
     transferSenders.current.set(fileId, "local")
 
     try {
       const fileBuffer = await file.file.arrayBuffer()
       const totalChunks = Math.ceil(fileBuffer.byteLength / CHUNK_SIZE)
-      // notify all devices of incoming file
+    
       availableDevices.forEach((device) => {
         device.connection?.send({
           type: "file-start",
@@ -77,7 +76,7 @@ export function useTransfers(connectedDevices: ConnectedDevice[]) {
       let chunkIndex = 0
       const sendChunk = () => {
         if (cancelledTransfers.current.has(fileId)) {
-          // stop sending if cancelled
+          
           const t = transferIntervals.current.get(fileId)
           if (t) clearTimeout(t)
           transferIntervals.current.delete(fileId)
@@ -88,8 +87,6 @@ export function useTransfers(connectedDevices: ConnectedDevice[]) {
           const start = chunkIndex * CHUNK_SIZE
           const end = Math.min(start + CHUNK_SIZE, fileBuffer.byteLength)
           const chunk = fileBuffer.slice(start, end)
-
-          // broadcast this chunk to all connected devices
           availableDevices.forEach((device) => {
             device.connection?.send({ type: "file-chunk", fileId: file.id, chunkIndex, chunk })
           })
@@ -127,13 +124,10 @@ export function useTransfers(connectedDevices: ConnectedDevice[]) {
       clearTimeout(timeoutId)
       transferIntervals.current.delete(fileId)
     }
-
-    // Determine cancellation strategy based on connection count
     const connectedCount = connectedDevices.filter(d => d.connected).length
     const isSender = transferSenders.current.get(fileId) === "local"
 
     if (connectedCount === 1 || isSender) {
-      // Single connection or main sender: cancel for all devices
       connectedDevices.forEach(device => {
         if (device.connection) {
           device.connection.send({
@@ -144,7 +138,7 @@ export function useTransfers(connectedDevices: ConnectedDevice[]) {
         }
       })
     } else {
-      // Multiple connections and not sender: cancel only for this device
+      
       connectedDevices.forEach(device => {
         if (device.connection) {
           device.connection.send({
@@ -165,7 +159,6 @@ export function useTransfers(connectedDevices: ConnectedDevice[]) {
     transferIntervals.current.clear()
     cancelledTransfers.current = new Set(files.filter(f => f.status === "transferring" || f.status === "pending").map(f => f.id))
 
-    // Cancel all transfers for all devices
     connectedDevices.forEach(device => {
       if (device.connection) {
         device.connection.send({
