@@ -52,7 +52,7 @@ export function FileManager({
         <input ref={fileInputRef} type="file" multiple onChange={onFileSelect} className="hidden" />
 
         {files.length > 0 && (
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <Button
               onClick={onStartAllTransfers}
               className="flex-1 rounded-sm"

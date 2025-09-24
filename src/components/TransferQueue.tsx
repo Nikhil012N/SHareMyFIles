@@ -21,7 +21,7 @@ export function TransferQueue({ files, onStartFileTransfer, onCancelFileTransfer
           <Badge variant="outline" className="rounded-sm">
             {completedCount} completed
           </Badge>
-          <Badge variant="secondary" className="rounded-sm">
+          <Badge variant="outline" className="rounded-sm">
             {activeCount} active
           </Badge>
           <Badge variant="destructive" className="rounded-sm">

@@ -43,7 +43,7 @@ export function NetworkPanel({
         <div>
           <label className="text-sm font-medium mb-2 block">Your Device ID</label>
           <div className="flex gap-2">
-            <Input value={peerId} readOnly className="rounded-sm font-mono text-sm" />
+            <Input value={peerId} readOnly className="border rounded-sm font-mono text-sm" />
             <Button onClick={onCopyPeerId} size="sm" variant="outline" className="rounded-sm bg-transparent">
               <FiCopy className="w-4 h-4" />
             </Button>
