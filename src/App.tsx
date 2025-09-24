@@ -14,6 +14,8 @@ import { toast } from "sonner"
 
 export default function FileShareApp() {
   const { isDarkMode, setIsDarkMode } = useTheme(true)
+   const [connectId, setConnectId] = useState("")
+   
   const {
     peer,
     peerId,
@@ -24,7 +26,7 @@ export default function FileShareApp() {
     disconnectAllDevices,
     reconnectToNetwork,
     setOnDataHandler,
-  } = usePeerNetwork()
+  } = usePeerNetwork({setConnectId})
 
   const {
     files,
@@ -37,7 +39,7 @@ export default function FileShareApp() {
     clearCompletedFiles,
   } = useTransfers(connectedDevices)
 
-  const [connectId, setConnectId] = useState("")
+ 
   const [isConnecting, setIsConnecting] = useState(false)
   const [shareUrl, setShareUrl] = useState("")
 

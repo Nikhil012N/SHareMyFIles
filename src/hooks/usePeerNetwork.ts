@@ -4,7 +4,7 @@ import type { DataConnection } from "peerjs"
 import { toast } from "sonner"
 import type { ConnectedDevice } from "../constants/types"
 
-export function usePeerNetwork() {
+export function usePeerNetwork({setConnectId}:{setConnectId:React.Dispatch<React.SetStateAction<string>>}) {
   const [peer, setPeer] = useState<Peer | null>(null)
   const [peerId, setPeerId] = useState<string>("")
   const [connectedDevices, setConnectedDevices] = useState<ConnectedDevice[]>([])
@@ -66,7 +66,6 @@ export function usePeerNetwork() {
       setPeerId(id)
       setPeer(newPeer)
       setIsReconnecting(false)
-      toast.success("Connected to network", { description: `Your ID: ${id.substring(0, 8)}...` })
     })
 
     newPeer.on("connection", (conn) => {
@@ -74,9 +73,14 @@ export function usePeerNetwork() {
     })
 
     newPeer.on("error", (error) => {
-      console.error("Peer error:", error)
-      toast.error("Connection error", { description: "Please check your network connection" })
-      setIsReconnecting(false)
+    console.error("Peer error:", error)
+    const url = new URL(window.location.href);
+    const params = url.searchParams;
+    params.delete("connect"); 
+    setIsReconnecting(false)
+    setConnectId("")
+    history.replaceState(null, '', url.href);
+      
     })
 
     newPeer.on("disconnected", () => {

@@ -17,7 +17,7 @@ export function TransferQueue({ files, onStartFileTransfer, onCancelFileTransfer
     <Card className="mt-6 p-6 border-border rounded-sm">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold">Transfer Queue</h2>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap justify-end">
           <Badge variant="outline" className="rounded-sm">
             {completedCount} completed
           </Badge>
@@ -34,7 +34,7 @@ export function TransferQueue({ files, onStartFileTransfer, onCancelFileTransfer
           <div key={file.id} className="p-4 bg-muted rounded-sm">
             <div className="flex items-center justify-between mb-2">
               <div className="flex-1">
-                <p className="font-medium text-sm">{file.name}</p>
+                <p className="font-medium text-sm overflow-auto w-[50vw] will-change-scroll hide-scroll">{file.name}</p>
                 <div className="flex items-center gap-4 text-xs text-muted-foreground">
                   <span>{formatFileSize(file.size)}</span>
                   {file.startTime && <span>Started: {file.startTime.toLocaleTimeString()}</span>}
